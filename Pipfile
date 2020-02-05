@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+requests = "*"
+beautifulsoup4 = "*"
+
+[scripts]
+test = "python spider/keibalab_spider.py 20200125 20200126"
+scrape = "python scraper/keibalab_scraper.py"
+
+[requires]
+python_version = "3.7"
