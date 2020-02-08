@@ -11,7 +11,8 @@ requests = "*"
 beautifulsoup4 = "*"
 
 [scripts]
-test = "python spider/keibalab_spider.py 20200125 20200126"
+sp_test = "python spider/keibalab_spider.py 20200125"
+crawl = "python spider/keibalab_spider 20180201 20180228"
 scrape = "python scraper/keibalab_scraper.py"
 
 [requires]
