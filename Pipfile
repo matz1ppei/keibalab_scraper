@@ -9,11 +9,16 @@ pylint = "*"
 [packages]
 requests = "*"
 beautifulsoup4 = "*"
+mariadb = "*"
 
 [scripts]
-test = "python spider/keibalab_spider.py 20200124 20200125"
-crawl = "python spider/keibalab_spider.py 20200101 20200131"
+test   = "python spider/keibalab_spider.py 20200124 20200125"
+maria  = "python scraper/keibalab_scraper_for_mariadb.py devuser maria"
+crawl  = "python spider/keibalab_spider.py 20200101 20200131"
 scrape = "python scraper/keibalab_scraper.py"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

@@ -1,1 +1,5 @@
 .vscode/
+/db/*
+!/db/.gitkeep
+/html/*
+!/html/.gitkeep
