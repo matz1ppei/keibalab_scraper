@@ -38,6 +38,7 @@ def init_db(c):
     create_table_course(c)
     create_table_result(c)
     create_table_payoff(c)
+    create_table_trio(c)
 
 def create_table_course(c):
     c.execute('DROP TABLE IF EXISTS course')
@@ -109,6 +110,19 @@ def create_table_payoff(c):
         )
     """)
 
+def create_table_trio(c):
+    c.execute('DROP TABLE IF EXISTS trio')
+    c.execute("""
+        CREATE TABLE trio (
+            id integer primary key,
+            race_id text,
+            trio_no text,
+            trio_fav text,
+            fav_sorted text,
+            payoff text
+        )
+    """)
+
 def get_html(folder_path):
     for html in Path(folder_path).iterdir():
         yield html
@@ -127,6 +141,8 @@ def scrape(html):
 
             payoff_table = soup.find('div', class_='haraimodoshi').table
             race_info['payoff'] = scrape_payoff(payoff_table, html.name)
+
+            race_info['trio'] = generate_trio(race_info)
 
     return race_info
 
@@ -211,10 +227,35 @@ def scrape_payoff(table, file_name):
 
     return payoff
 
+def generate_trio(race_info):
+    result = race_info['result']
+    payoff = race_info['payoff']
+    trio = {}
+    trio_no, trio_fav = [], []
+    for i, row in enumerate(result):
+        if i == 0:
+            trio['race_id'] = row['race_id']
+            trio_fav.append(row['favorite'])
+        elif i < 3:
+            trio_fav.append(row['favorite'])
+        else:
+            break;
+
+    trio['trio_no'] = payoff['trio_r']
+    trio['trio_fav'] = '-'.join(trio_fav)
+
+    fav_sorted = sorted(trio_fav, key=int)
+    trio['fav_sorted'] = '-'.join(fav_sorted)
+
+    trio['payoff'] = payoff['trio_p']
+
+    return trio
+
 def save(c, race_info):
     insert_course(c, race_info['course'])
     insert_result(c, race_info['result'])
     insert_payoff(c, race_info['payoff'])
+    insert_trio(c, race_info['trio'])
 
 def insert_course(c, course):
     c.execute("""
@@ -332,6 +373,24 @@ def insert_payoff(c, payoff):
             :trifecta_p
         )
     """, payoff)
+
+def insert_trio(c, trio):
+    c.execute("""
+        INSERT INTO trio (
+            race_id,
+            trio_no,
+            trio_fav,
+            fav_sorted,
+            payoff
+        )
+        VALUES (
+            :race_id,
+            :trio_no,
+            :trio_fav,
+            :fav_sorted,
+            :payoff
+        )
+    """, trio) 
 
 if __name__ == '__main__':
     main()
