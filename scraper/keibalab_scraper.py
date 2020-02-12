@@ -119,7 +119,7 @@ def create_table_trio(c):
             trio_no text,
             trio_fav text,
             fav_sorted text,
-            payoff text
+            payoff int
         )
     """)
 
@@ -230,8 +230,12 @@ def scrape_payoff(table, file_name):
 def generate_trio(race_info):
     result = race_info['result']
     payoff = race_info['payoff']
-    trio = {}
-    trio_no, trio_fav = [], []
+
+    # 2008/02/04 tokyo
+    if len(result[0]['favorite']) == 0:
+        return {}
+
+    trio, trio_fav = {}, []
     for i, row in enumerate(result):
         if i == 0:
             trio['race_id'] = row['race_id']
@@ -247,7 +251,8 @@ def generate_trio(race_info):
     fav_sorted = sorted(trio_fav, key=int)
     trio['fav_sorted'] = '-'.join(fav_sorted)
 
-    trio['payoff'] = payoff['trio_p']
+    payoff_text = payoff['trio_p'].split('円')[0].replace(',', '')
+    trio['payoff'] = int(payoff_text)
 
     return trio
 
@@ -255,7 +260,8 @@ def save(c, race_info):
     insert_course(c, race_info['course'])
     insert_result(c, race_info['result'])
     insert_payoff(c, race_info['payoff'])
-    insert_trio(c, race_info['trio'])
+    if not race_info['trio'] == {}:
+        insert_trio(c, race_info['trio'])
 
 def insert_course(c, course):
     c.execute("""
