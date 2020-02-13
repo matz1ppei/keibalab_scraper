@@ -129,7 +129,7 @@ def get_html(folder_path):
 
 def scrape(html):
     with open(html, 'r', encoding='utf-8') as f:
-        soup = BeautifulSoup(f, 'html.parser')
+        soup = BeautifulSoup(f, 'lxml')
         race_info = {}
 
         result_table = soup.find('table', class_='resulttable')
