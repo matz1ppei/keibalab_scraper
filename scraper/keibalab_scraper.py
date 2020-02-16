@@ -2,6 +2,7 @@ import sys
 import sqlite3
 from bs4 import BeautifulSoup
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
 
 COURSE_NAME = {
     '01': '札幌',
@@ -23,11 +24,11 @@ def main():
         c = conn.cursor()
         init_db(c)
 
-        for html in get_html('./html'):
-            print(html.name, flush=True)
-            race_info = scrape(html)
-            if len(race_info) > 0:
-                save(c, race_info)
+        with ProcessPoolExecutor() as executor:
+            results = executor.map(scrape, get_html('./html'))
+            for race_info in results:
+                if len(race_info) > 0:
+                    save(c, race_info)
 
         conn.commit()
 
@@ -55,7 +56,7 @@ def create_table_course(c):
             distance text,
             weather text,
             going text,
-            number_of_horses text
+            number_of_horses int
         )
     """)
 
@@ -128,6 +129,7 @@ def get_html(folder_path):
         yield html
 
 def scrape(html):
+    print(html.name, flush=True)
     with open(html, 'r', encoding='utf-8') as f:
         soup = BeautifulSoup(f, 'lxml')
         race_info = {}
