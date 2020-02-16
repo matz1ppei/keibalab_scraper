@@ -25,7 +25,7 @@ def main():
         init_db(c)
 
         with ProcessPoolExecutor() as executor:
-            results = executor.map(scrape, get_html('./html'))
+            results = executor.map(scrape, get_html('./html'), chunksize=100)
             for race_info in results:
                 if len(race_info) > 0:
                     save(c, race_info)
