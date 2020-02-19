@@ -77,7 +77,7 @@ def create_table_result(c):
             jockey_id text,
             jockey text,
             favorite text,
-            win_odds text,
+            win_odds real,
             finish text,
             margin text,
             position text,
@@ -245,7 +245,7 @@ def generate_trio(race_info):
         elif i < 3:
             trio_fav.append(row['favorite'])
         else:
-            break;
+            break
 
     trio['trio_no'] = payoff['trio_r']
     trio['trio_fav'] = '-'.join(trio_fav)
