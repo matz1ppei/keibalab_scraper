@@ -9,7 +9,6 @@ pylint = "*"
 [packages]
 requests = "*"
 beautifulsoup4 = "*"
-mariadb = "*"
 lxml = "*"
 
 [scripts]
@@ -19,7 +18,7 @@ crawl  = "python spider/keibalab_spider.py 20200101 20200131"
 scrape = "python scraper/keibalab_scraper.py"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
 
 [pipenv]
 allow_prereleases = true
