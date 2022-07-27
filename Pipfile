@@ -12,7 +12,7 @@ beautifulsoup4 = "*"
 lxml = "*"
 
 [scripts]
-test   = "python spider/keibalab_spider.py 20200124 20200125"
+test   = "python spider/keibalab_spider.py 20200125 20200126"
 maria  = "python scraper/keibalab_scraper_for_mariadb.py devuser maria"
 crawl  = "python spider/keibalab_spider.py 20200101 20200131"
 scrape = "python scraper/keibalab_scraper.py"

@@ -1,4 +1,4 @@
-import sys
+import argparse
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -18,29 +18,27 @@ COURSE_ID = {
     '小倉': '10'
 }
 
+START_URL = 'https://www.keibalab.jp/db/race/'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+
 def main():
-    args = sys.argv
+    parser = argparse.ArgumentParser(description='Keibalabの情報を取得する')
+    parser.add_argument('from_date', help='YYYYMMDD形式の取得開始日')
+    parser.add_argument('to_date', help='YYYYMMDD形式の取得終了日')
+    args = parser.parse_args()
 
-    start_url = 'https://www.keibalab.jp/db/race/'
-    from_date = args[1]
+    from_date = datetime.strptime(args.from_date, '%Y%m%d')
+    to_date = datetime.strptime(args.to_date, '%Y%m%d')
 
-    if len(args) < 3:
-        to_date = from_date
-    else:
-        to_date = args[2]
-
-    for race in check_race(start_url, from_date, to_date):
-        for url, race_id in generate_urls(start_url, race):
+    for race in check_race(from_date, to_date):
+        for url, race_id in generate_urls(race):
             time.sleep(1)
             response = fetch(url)
             save(response, race_id)
 
-def check_race(start_url, from_date_str, to_date_str):
-    from_date = datetime.strptime(from_date_str, '%Y%m%d')
-    to_date   = datetime.strptime(to_date_str, '%Y%m%d')
-
+def check_race(from_date, to_date):
     while(from_date <= to_date):
-        response = fetch(start_url + from_date.strftime('%Y%m%d'))
+        response = fetch(START_URL + from_date.strftime('%Y%m%d'))
         soup = BeautifulSoup(response.text, 'html.parser')
         if not soup.table is None:
             print(response.url + '/', flush=True)
@@ -51,14 +49,15 @@ def check_race(start_url, from_date_str, to_date_str):
             time.sleep(1)
         from_date += timedelta(days=1)
 
-def generate_urls(start_url, race):
+def generate_urls(race):
     for racenumber in range(1, 13):
         race_id = race + f'{racenumber:02}'
-        url = start_url + race_id + '/'
+        url = START_URL + race_id + '/'
         yield url, race_id
 
 def fetch(url):
-    return requests.get(url)
+    headers = {'User-Agent': USER_AGENT}
+    return requests.get(url, headers=headers)
 
 def save(response, race_id):
 
