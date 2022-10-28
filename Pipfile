@@ -10,6 +10,7 @@ pylint = "*"
 requests = "*"
 beautifulsoup4 = "*"
 lxml = "*"
+sqlalchemy = "*"
 
 [scripts]
 test   = "python spider/keibalab_spider.py 20200125 20200126"
